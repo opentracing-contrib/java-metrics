@@ -50,8 +50,7 @@ public class PrometheusMetricsReporterTest {
     @Test
     public void testWithCustomMetricTypeNames() {
         PrometheusMetricsReporter reporter = PrometheusMetricsReporter.newMetricsReporter()
-                .withCountName("MyCount")
-                .withDurationName("MyDuration")
+                .withName("MyName")
                 .withCollectorRegistry(collectorRegistry)
                 .withConstLabel("span.kind", Tags.SPAN_KIND_CLIENT) // Override the default, to make sure span metrics reported
                 .build();
@@ -60,15 +59,10 @@ public class PrometheusMetricsReporterTest {
 
         reporter.reportSpan(span, "testop", Collections.<String,Object>emptyMap(), 100000L);
 
-        // Check span count
-        List<MetricFamilySamples> samples = reporter.getSpanCount().collect();
-        assertEquals(1, samples.size());
-        assertEquals("MyCount", samples.get(0).name);
-
         // Check span duration
-        samples = reporter.getSpanDuration().collect();
+        List<MetricFamilySamples> samples = reporter.getHistogram().collect();
         assertEquals(1, samples.size());
-        assertEquals("MyDuration", samples.get(0).name);
+        assertEquals("MyName", samples.get(0).name);
     }
 
     @Test
@@ -85,29 +79,26 @@ public class PrometheusMetricsReporterTest {
 
         reporter.reportSpan(span, "testop", spanTags, 100000L);
 
-        // Check span count
-        List<MetricFamilySamples> samples = reporter.getSpanCount().collect();
-        assertEquals(1, samples.size());
-        assertEquals(1, samples.get(0).samples.size());
-
-        Sample sample=samples.get(0).samples.get(0);
-        assertEquals(1, (int)sample.value); // Span count
-        assertEquals(Arrays.asList(reporter.getLabelNames()), sample.labelNames);
-        assertEquals("testop", sample.labelValues.get(0));
-
-        // Check span duration
-        samples = reporter.getSpanDuration().collect();
+        // Check histogram
+        List<MetricFamilySamples> samples = reporter.getHistogram().collect();
         assertEquals(1, samples.size());
         assertEquals(17, samples.get(0).samples.size());
-
+        
         for (int i=0; i < samples.get(0).samples.size(); i++) {
-            sample = samples.get(0).samples.get(i);
+            Sample sample = samples.get(0).samples.get(i);
             // Verify operation name
             assertEquals("testop", sample.labelValues.get(0));
             List<String> labelNames = new ArrayList<String>(sample.labelNames);
             if (labelNames.get(labelNames.size()-1).equals("le")) {
                 // Remove additional label added by previous for all but last sample
                 labelNames.remove(labelNames.size()-1);
+
+                // Check if value is "+Inf" - if so, then check count
+                // See https://prometheus.io/docs/concepts/metric_types/ (Histogram explanation
+                // of count)
+                if (sample.labelValues.get(sample.labelNames.size()-1).equals("+Inf")) {
+                    assertEquals(1, (int)sample.value);                    
+                }
             }
             assertEquals(Arrays.asList(reporter.getLabelNames()), labelNames);
         }

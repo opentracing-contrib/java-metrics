@@ -24,7 +24,6 @@ import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 import io.opentracing.contrib.metrics.label.ConstMetricLabel;
 import io.opentracing.contrib.metrics.label.TagMetricLabel;
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.Counter;
 import io.prometheus.client.Histogram;
 
 /**
@@ -33,17 +32,14 @@ import io.prometheus.client.Histogram;
  */
 public class PrometheusMetricsReporter extends AbstractMetricsReporter implements MetricsReporter {
 
-    private final Counter count;
-    private final Histogram duration;
+    private final Histogram histogram;
 
-    private PrometheusMetricsReporter(String countName, String durationName,
+    private PrometheusMetricsReporter(String name,
             CollectorRegistry registry, List<MetricLabel> labels) {
         super(labels);
 
         String[] labelNames = getLabelNames();
-        this.count = Counter.build().name(countName).help("The span count")
-                .labelNames(labelNames).register(registry);
-        this.duration = Histogram.build().name(durationName).help("The span duration")
+        this.histogram = Histogram.build().name(name).help("The span metrics")
                 .labelNames(labelNames).register(registry);
     }
 
@@ -51,18 +47,13 @@ public class PrometheusMetricsReporter extends AbstractMetricsReporter implement
     public void reportSpan(BaseSpan<?> span, String operation, Map<String, Object> tags, long duration) {
         String[] labelValues = getLabelValues(span, operation, tags, duration);
         if (labelValues != null) {
-            this.count.labels(labelValues).inc();
             // Convert microseconds to seconds
-            this.duration.labels(labelValues).observe(duration / (double)1000000);
+            this.histogram.labels(labelValues).observe(duration / (double)1000000);
         }
     }
 
-    Counter getSpanCount() {
-        return count;
-    }
-
-    Histogram getSpanDuration() {
-        return duration;
+    Histogram getHistogram() {
+        return histogram;
     }
 
     /**
@@ -101,8 +92,7 @@ public class PrometheusMetricsReporter extends AbstractMetricsReporter implement
      *
      */
     public static class Builder {
-        private String countName = "span_count";
-        private String durationName = "span_duration";
+        private String name = "span";
         private CollectorRegistry collectorRegistry = CollectorRegistry.defaultRegistry;
         private List<MetricLabel> metricLabels = new ArrayList<MetricLabel>();
 
@@ -111,13 +101,8 @@ public class PrometheusMetricsReporter extends AbstractMetricsReporter implement
             return this;
         }
 
-        public Builder withCountName(String countName) {
-            this.countName = countName;
-            return this;
-        }
-
-        public Builder withDurationName(String durationName) {
-            this.durationName = durationName;
+        public Builder withName(String name) {
+            this.name = name;
             return this;
         }
 
@@ -142,7 +127,7 @@ public class PrometheusMetricsReporter extends AbstractMetricsReporter implement
         }
 
         public PrometheusMetricsReporter build() {
-            return new PrometheusMetricsReporter(countName, durationName, collectorRegistry, metricLabels);
+            return new PrometheusMetricsReporter(name, collectorRegistry, metricLabels);
         }
     }
 }
