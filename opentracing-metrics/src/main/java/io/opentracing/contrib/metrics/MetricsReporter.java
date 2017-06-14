@@ -13,25 +13,24 @@
  */
 package io.opentracing.contrib.metrics;
 
-import io.opentracing.Tracer;
-import io.opentracing.contrib.metrics.internal.tracer.MetricsTracer;
+import java.util.Map;
+
+import io.opentracing.BaseSpan;
 
 /**
- * This is the main entry point into the metrics capability, enabling a {@link Tracer}
- * instance to be decorated with the metrics reporting functionality.
+ * This interface is used to notify when metrics associated with a finished span can be reported.
  *
  */
-public class Metrics {
+public interface MetricsReporter {
 
     /**
-     * This method decorates a supplied tracer with the ability to report span
-     * based metrics to the supplied metrics reporter.
+     * This method reports metrics based on the details associated with the supplied {@link BaseSpan}.
      *
-     * @param tracer The tracer
-     * @param reporter The reporter
-     * @return The decorated tracer
+     * @param span The span, to provide access to baggage items
+     * @param operation The operation associated with the span
+     * @param tags The tags associated with the span
+     * @param duration The duration of the span, in microseconds
      */
-    public static Tracer decorate(Tracer tracer, MetricsReporter reporter) {
-        return new MetricsTracer(tracer, reporter);
-    }
+    public void reportSpan(BaseSpan<?> span, String operation, Map<String,Object> tags, long duration);
+
 }
