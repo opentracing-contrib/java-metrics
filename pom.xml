@@ -35,6 +35,7 @@
   </developers>
 
   <modules>
+    <module>opentracing-metrics</module>
   </modules>
 
   <properties>
