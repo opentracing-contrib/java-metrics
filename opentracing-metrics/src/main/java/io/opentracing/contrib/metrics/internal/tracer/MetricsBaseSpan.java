@@ -20,16 +20,16 @@ import io.opentracing.SpanContext;
 
 public class MetricsBaseSpan<T extends BaseSpan<?>> implements BaseSpan<T> {
 
-    private final T span;
+    private final T wrappedSpan;
     private final MetricsTracer tracer;
 
     public MetricsBaseSpan(MetricsTracer tracer, T span) {
         this.tracer = tracer;
-        this.span = span;
+        this.wrappedSpan = span;
     }
 
     protected T span() {
-        return span;
+        return wrappedSpan;
     }
 
     protected MetricsTracer metricsTracer() {
@@ -38,12 +38,12 @@ public class MetricsBaseSpan<T extends BaseSpan<?>> implements BaseSpan<T> {
 
     @Override
     public SpanContext context() {
-        return span.context();
+        return wrappedSpan.context();
     }
 
     @Override
     public String getBaggageItem(String name) {
-        return span.getBaggageItem(name);
+        return wrappedSpan.getBaggageItem(name);
     }
 
     @Override
@@ -54,73 +54,73 @@ public class MetricsBaseSpan<T extends BaseSpan<?>> implements BaseSpan<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T log(Map<String, ?> fields) {
-        span.log(fields);
+        wrappedSpan.log(fields);
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T log(String event) {
-        span.log(event);
+        wrappedSpan.log(event);
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T log(long timestampMicroseconds, Map<String, ?> fields) {
-        span.log(timestampMicroseconds, fields);
+        wrappedSpan.log(timestampMicroseconds, fields);
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T log(long timestampMicroseconds, String event) {
-        span.log(timestampMicroseconds, event);
+        wrappedSpan.log(timestampMicroseconds, event);
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T setOperationName(String operationName) {
-        span.setOperationName(operationName);
-        tracer.spanUpdateOperation(span.context(), operationName);
+        wrappedSpan.setOperationName(operationName);
+        tracer.spanUpdateOperation(wrappedSpan.context(), operationName);
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T setTag(String key, String value) {
-        span.setTag(key, value);
-        tracer.spanUpdateTag(span.context(), key, value);
+        wrappedSpan.setTag(key, value);
+        tracer.spanUpdateTag(wrappedSpan.context(), key, value);
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T setTag(String key, boolean value) {
-        span.setTag(key, value);
-        tracer.spanUpdateTag(span.context(), key, value);
+        wrappedSpan.setTag(key, value);
+        tracer.spanUpdateTag(wrappedSpan.context(), key, value);
         return (T)this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T setTag(String key, Number value) {
-        span.setTag(key, value);
-        tracer.spanUpdateTag(span.context(), key, value);
+        wrappedSpan.setTag(key, value);
+        tracer.spanUpdateTag(wrappedSpan.context(), key, value);
         return (T)this;
     }
 
     @SuppressWarnings({ "deprecation", "unchecked" })
     @Override
     public T log(String eventName, Object payload) {
-        return (T)span.log(eventName, payload);
+        return (T)wrappedSpan.log(eventName, payload);
     }
 
     @SuppressWarnings({ "deprecation", "unchecked" })
     @Override
     public T log(long timestampMicroseconds, String eventName, Object payload) {
-        return (T)span.log(timestampMicroseconds, eventName, payload);
+        return (T)wrappedSpan.log(timestampMicroseconds, eventName, payload);
     }
 
 }

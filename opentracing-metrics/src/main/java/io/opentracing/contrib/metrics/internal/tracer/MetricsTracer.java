@@ -30,13 +30,13 @@ import io.opentracing.propagation.Format;
 
 public class MetricsTracer implements Tracer {
 
-    private final Tracer tracer;
+    private final Tracer wrappedTracer;
     private final MetricsReporter reporter;
 
     private final Map<SpanContext,MetricData> metricData = new WeakHashMap<SpanContext,MetricData>();
 
     public MetricsTracer(Tracer tracer, MetricsReporter reporter) {
-        this.tracer = tracer;
+        this.wrappedTracer = tracer;
         this.reporter = reporter;
     }
 
@@ -46,27 +46,27 @@ public class MetricsTracer implements Tracer {
 
     @Override
     public ActiveSpan activeSpan() {
-        return new MetricsActiveSpan(this, tracer.activeSpan());
+        return new MetricsActiveSpan(this, wrappedTracer.activeSpan());
     }
 
     @Override
     public ActiveSpan makeActive(Span span) {
-        return new MetricsActiveSpan(this, tracer.makeActive(span));
+        return new MetricsActiveSpan(this, wrappedTracer.makeActive(span));
     }
 
     @Override
     public SpanBuilder buildSpan(String operation) {
-        return new MetricsSpanBuilder(operation, tracer.buildSpan(operation));
+        return new MetricsSpanBuilder(operation, wrappedTracer.buildSpan(operation));
     }
 
     @Override
     public <C> SpanContext extract(Format<C> format, C carrier) {
-        return tracer.extract(format, carrier);
+        return wrappedTracer.extract(format, carrier);
     }
 
     @Override
     public <C> void inject(SpanContext context, Format<C> format, C carrier) {
-        tracer.inject(context, format, carrier);
+        wrappedTracer.inject(context, format, carrier);
     }
 
     void spanStarted(BaseSpan<?> span, String operationName, long startNanoTime, Map<String,Object> tags) {
@@ -195,76 +195,76 @@ public class MetricsTracer implements Tracer {
     public class MetricsSpanBuilder implements SpanBuilder {
         
         private final String operationName;
-        private final SpanBuilder builder;
+        private final SpanBuilder wrappedBuilder;
         private final long startNanoTime = System.nanoTime();
         private final Map<String,Object> tags = new HashMap<String,Object>();
 
         public MetricsSpanBuilder(String operationName, SpanBuilder builder) {
             this.operationName = operationName;
-            this.builder = builder;
+            this.wrappedBuilder = builder;
         }
 
         @Override
         public SpanBuilder asChildOf(SpanContext parent) {
-            builder.asChildOf(parent);
+            wrappedBuilder.asChildOf(parent);
             return this;
         }
 
         @Override
         public SpanBuilder asChildOf(BaseSpan<?> parent) {
-            builder.asChildOf(parent);
+            wrappedBuilder.asChildOf(parent);
             return this;
         }
 
         @Override
         public SpanBuilder addReference(String referenceType, SpanContext referencedContext) {
-            builder.addReference(referenceType, referencedContext);
+            wrappedBuilder.addReference(referenceType, referencedContext);
             return this;
         }
 
         @Override
         public SpanBuilder ignoreActiveSpan() {
-            builder.ignoreActiveSpan();
+            wrappedBuilder.ignoreActiveSpan();
             return this;
         }
 
         @Override
         public SpanBuilder withTag(String key, String value) {
             tags.put(key, value);
-            builder.withTag(key, value);
+            wrappedBuilder.withTag(key, value);
             return this;
         }
 
         @Override
         public SpanBuilder withTag(String key, boolean value) {
             tags.put(key, value);
-            builder.withTag(key, value);
+            wrappedBuilder.withTag(key, value);
             return this;
         }
 
         @Override
         public SpanBuilder withTag(String key, Number value) {
             tags.put(key, value);
-            builder.withTag(key, value);
+            wrappedBuilder.withTag(key, value);
             return this;
         }
 
         @Override
         public SpanBuilder withStartTimestamp(long microseconds) {
-            builder.withStartTimestamp(microseconds);
+            wrappedBuilder.withStartTimestamp(microseconds);
             return this;
         }
 
         @Override
         public ActiveSpan startActive() {
-            ActiveSpan activeSpan = new MetricsActiveSpan(MetricsTracer.this, builder.startActive());
+            ActiveSpan activeSpan = new MetricsActiveSpan(MetricsTracer.this, wrappedBuilder.startActive());
             spanStarted(activeSpan, operationName, startNanoTime, tags);
             return activeSpan;
         }
 
         @Override
         public Span startManual() {
-            Span span = new MetricsSpan(MetricsTracer.this, builder.startManual());
+            Span span = new MetricsSpan(MetricsTracer.this, wrappedBuilder.startManual());
             spanStarted(span, operationName, startNanoTime, tags);
             return span;
         }
