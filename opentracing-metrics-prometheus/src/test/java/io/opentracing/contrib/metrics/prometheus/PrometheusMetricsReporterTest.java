@@ -14,6 +14,8 @@
 package io.opentracing.contrib.metrics.prometheus;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +27,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-
-import io.opentracing.Span;
+import io.opentracing.contrib.metrics.MetricsSpanData;
 import io.opentracing.tag.Tags;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
@@ -55,9 +55,12 @@ public class PrometheusMetricsReporterTest {
                 .withConstLabel("span.kind", Tags.SPAN_KIND_CLIENT) // Override the default, to make sure span metrics reported
                 .build();
 
-        Span span = Mockito.mock(Span.class);
+        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
+        when(metricsSpanData.getOperationName()).thenReturn("testop");
+        when(metricsSpanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
+        when(metricsSpanData.getDuration()).thenReturn(100000L);
 
-        reporter.reportSpan(span, "testop", Collections.<String,Object>emptyMap(), 100000L);
+        reporter.reportSpan(metricsSpanData);
 
         // Check span duration
         List<MetricFamilySamples> samples = reporter.getHistogram().collect();
@@ -72,12 +75,15 @@ public class PrometheusMetricsReporterTest {
                 .withConstLabel("span.kind", Tags.SPAN_KIND_CLIENT) // Override the default, to make sure span metrics reported
                 .build();
 
-        Span span = Mockito.mock(Span.class);
-
         Map<String,Object> spanTags = new HashMap<String,Object>();
         spanTags.put(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
 
-        reporter.reportSpan(span, "testop", spanTags, 100000L);
+        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
+        when(metricsSpanData.getOperationName()).thenReturn("testop");
+        when(metricsSpanData.getTags()).thenReturn(spanTags);
+        when(metricsSpanData.getDuration()).thenReturn(100000L);
+
+        reporter.reportSpan(metricsSpanData);
 
         // Check histogram
         List<MetricFamilySamples> samples = reporter.getHistogram().collect();

@@ -13,10 +13,8 @@
  */
 package io.opentracing.contrib.metrics.label;
 
-import java.util.Map;
-
-import io.opentracing.BaseSpan;
 import io.opentracing.contrib.metrics.MetricLabel;
+import io.opentracing.contrib.metrics.MetricsSpanData;
 
 /**
  * This implementation returns a constant value for the metric label.
@@ -43,7 +41,7 @@ public class ConstMetricLabel implements MetricLabel {
     }
 
     @Override
-    public Object value(BaseSpan<?> span, String operation, Map<String, Object> tags) {
+    public Object value(MetricsSpanData metricsSpanData) {
         return value;
     }
 

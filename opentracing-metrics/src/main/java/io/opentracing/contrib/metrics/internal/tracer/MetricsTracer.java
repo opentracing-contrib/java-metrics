@@ -25,6 +25,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.metrics.MetricsReporter;
+import io.opentracing.contrib.metrics.MetricsSpanData;
 import io.opentracing.propagation.Format;
 
 public class MetricsTracer implements Tracer {
@@ -105,8 +106,8 @@ public class MetricsTracer implements Tracer {
                 data = metricData.remove(context);
             }
             if (data != null) {
-                reporter.reportSpan(data.getSpan(), data.getOperationName(), data.getTags(),
-                        TimeUnit.NANOSECONDS.toMicros(finishNanoTime - data.getStartNanoTime()));
+                data.setFinishNanoTime(finishNanoTime);
+                reporter.reportSpan(data);
             }
         }
     }
@@ -133,12 +134,13 @@ public class MetricsTracer implements Tracer {
         }
     }
 
-    static class MetricData {
+    static class MetricData implements MetricsSpanData {
         private final AtomicInteger refCount;
         private BaseSpan<?> span;
         private String operationName;
         private final long startNanoTime;
-        private Map<String,Object> tags;
+        private long finishNanoTime;
+        private final Map<String,Object> tags;
         
         public MetricData(BaseSpan<?> span, String operationName, long startNanoTime, Map<String,Object> tags) {
             this.span = span;
@@ -148,10 +150,12 @@ public class MetricsTracer implements Tracer {
             this.refCount = new AtomicInteger(1);
         }
 
-        public BaseSpan<?> getSpan() {
-            return span;
+        @Override
+        public SpanContext getSpanContext() {
+            return span.context();
         }
 
+        @Override
         public String getOperationName() {
             return operationName;
         }
@@ -160,12 +164,19 @@ public class MetricsTracer implements Tracer {
             this.operationName = operationName;
         }
 
-        public long getStartNanoTime() {
-            return startNanoTime;
+        @Override
+        public long getDuration() {
+            return TimeUnit.NANOSECONDS.toMicros(finishNanoTime - startNanoTime);
         }
 
+        @Override
         public Map<String,Object> getTags() {
             return tags;
+        }
+
+        @Override
+        public String getBaggageItem(String key) {
+            return span.getBaggageItem(key);
         }
 
         public void incrementRefCount() {
@@ -174,6 +185,10 @@ public class MetricsTracer implements Tracer {
 
         public int decrementRefCount() {
             return refCount.decrementAndGet();
+        }
+
+        public void setFinishNanoTime(long finishNanoTime) {
+            this.finishNanoTime = finishNanoTime;
         }
     }
 

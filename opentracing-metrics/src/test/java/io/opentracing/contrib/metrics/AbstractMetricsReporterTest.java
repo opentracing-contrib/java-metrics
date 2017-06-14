@@ -14,6 +14,8 @@
 package io.opentracing.contrib.metrics;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,10 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-
-import io.opentracing.BaseSpan;
-import io.opentracing.Span;
 import io.opentracing.contrib.metrics.label.ConstMetricLabel;
 import io.opentracing.tag.Tags;
 
@@ -35,14 +33,14 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Collections.<MetricLabel>singletonList(new ConstMetricLabel("service", "TestService"))) {
             @Override
-            public void reportSpan(BaseSpan<?> span, String operation, Map<String, Object> tags, long duration) {
+            public void reportSpan(MetricsSpanData metricsSpanData) {
             }
         };
 
         assertEquals(AbstractMetricsReporter.STANDARD_SPAN_LABELS.size(), reporter.metricLabels.length - 1);
 
         assertEquals("service", reporter.metricLabels[0].name());
-        assertEquals("TestService", reporter.metricLabels[0].value(null, null, null));
+        assertEquals("TestService", reporter.metricLabels[0].value(null));
     }
 
     @Test
@@ -50,7 +48,7 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Collections.<MetricLabel>emptyList()) {
             @Override
-            public void reportSpan(BaseSpan<?> span, String operation, Map<String, Object> tags, long duration) {
+            public void reportSpan(MetricsSpanData metricsSpanData) {
             }
         };
 
@@ -64,17 +62,19 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Collections.<MetricLabel>emptyList()) {
             @Override
-            public void reportSpan(BaseSpan<?> span, String operation, Map<String, Object> tags, long duration) {
+            public void reportSpan(MetricsSpanData metricsSpanData) {
             }
         };
-
-        Span span = Mockito.mock(Span.class);
 
         Map<String,Object> spanTags = new HashMap<String,Object>();
         spanTags.put(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER);
         spanTags.put(Tags.ERROR.getKey(), true);
 
-        String[] labelValues = reporter.getLabelValues(span, "testop", spanTags, 100000L);
+        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
+        when(metricsSpanData.getOperationName()).thenReturn("testop");
+        when(metricsSpanData.getTags()).thenReturn(spanTags);
+
+        String[] labelValues = reporter.getLabelValues(metricsSpanData);
 
         assertEquals(3, labelValues.length);
         assertEquals(Tags.SPAN_KIND_SERVER, labelValues[1]);
@@ -93,10 +93,11 @@ public class AbstractMetricsReporterTest {
                 return null;
             }
             @Override
-            public Object value(BaseSpan<?> span, String operation, Map<String, Object> tags) {
-                Object error = tags.containsKey(name()) ? tags.get(name()) : false;
-                if (tags.containsKey(Tags.HTTP_STATUS.getKey())) {
-                    int status = (int)tags.get(Tags.HTTP_STATUS.getKey());
+            public Object value(MetricsSpanData metricsSpanData) {
+                Object error = metricsSpanData.getTags().containsKey(name())
+                        ? metricsSpanData.getTags().get(name()) : false;
+                if (metricsSpanData.getTags().containsKey(Tags.HTTP_STATUS.getKey())) {
+                    int status = (int)metricsSpanData.getTags().get(Tags.HTTP_STATUS.getKey());
                     if (status > 400) {
                         error = "4xx";
                     } else if (status > 500) {
@@ -112,11 +113,9 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Arrays.<MetricLabel>asList(new ConstMetricLabel("service", "TestService"), errorMetricTag)) {
             @Override
-            public void reportSpan(BaseSpan<?> span, String operation, Map<String, Object> tags, long duration) {
+            public void reportSpan(MetricsSpanData metricsSpanData) {
             }
         };
-
-        Span span = Mockito.mock(Span.class);
 
         // Specify standard error tag and http status - which will then be used to derive a
         // custom error label/tag on the metric
@@ -125,8 +124,12 @@ public class AbstractMetricsReporterTest {
         spanTags.put(Tags.HTTP_STATUS.getKey(), 401);
         spanTags.put(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
 
-        String[] labelValues = reporter.getLabelValues(span, "testop", spanTags, 100000L);
+        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
+        when(metricsSpanData.getOperationName()).thenReturn("testop");
+        when(metricsSpanData.getTags()).thenReturn(spanTags);
 
+        String[] labelValues = reporter.getLabelValues(metricsSpanData);
+ 
         assertEquals(4, labelValues.length);
         assertEquals("TestService", labelValues[0]);
         assertEquals("testop", labelValues[1]);

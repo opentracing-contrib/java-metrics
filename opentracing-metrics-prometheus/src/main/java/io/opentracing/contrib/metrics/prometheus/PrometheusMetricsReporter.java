@@ -15,11 +15,10 @@ package io.opentracing.contrib.metrics.prometheus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import io.opentracing.BaseSpan;
 import io.opentracing.contrib.metrics.AbstractMetricsReporter;
 import io.opentracing.contrib.metrics.MetricLabel;
 import io.opentracing.contrib.metrics.MetricsReporter;
+import io.opentracing.contrib.metrics.MetricsSpanData;
 import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 import io.opentracing.contrib.metrics.label.ConstMetricLabel;
 import io.opentracing.contrib.metrics.label.TagMetricLabel;
@@ -44,11 +43,11 @@ public class PrometheusMetricsReporter extends AbstractMetricsReporter implement
     }
 
     @Override
-    public void reportSpan(BaseSpan<?> span, String operation, Map<String, Object> tags, long duration) {
-        String[] labelValues = getLabelValues(span, operation, tags, duration);
+    public void reportSpan(MetricsSpanData metricsSpanData) {
+        String[] labelValues = getLabelValues(metricsSpanData);
         if (labelValues != null) {
             // Convert microseconds to seconds
-            this.histogram.labels(labelValues).observe(duration / (double)1000000);
+            this.histogram.labels(labelValues).observe(metricsSpanData.getDuration() / (double)1000000);
         }
     }
 
@@ -60,8 +59,8 @@ public class PrometheusMetricsReporter extends AbstractMetricsReporter implement
      * This method transforms the supplied label name to ensure it conforms to the required
      * Prometheus label format as defined by the regex "[a-zA-Z_:][a-zA-Z0-9_:]*".
      *
-     * @param name The name
-     * @return The label
+     * @param label The label
+     * @return The converted label
      */
     protected static String convertLabel(String label) {
         StringBuilder builder = new StringBuilder(label);

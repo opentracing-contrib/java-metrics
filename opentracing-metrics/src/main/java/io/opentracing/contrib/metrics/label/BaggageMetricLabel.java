@@ -13,10 +13,8 @@
  */
 package io.opentracing.contrib.metrics.label;
 
-import java.util.Map;
-
-import io.opentracing.BaseSpan;
 import io.opentracing.contrib.metrics.MetricLabel;
+import io.opentracing.contrib.metrics.MetricsSpanData;
 
 /**
  * This implementation attempts to obtain the metric label value from the span's
@@ -44,8 +42,8 @@ public class BaggageMetricLabel implements MetricLabel {
     }
 
     @Override
-    public Object value(BaseSpan<?> span, String operation, Map<String, Object> tags) {
-        Object ret = span.getBaggageItem(name());
+    public Object value(MetricsSpanData metricsSpanData) {
+        Object ret = metricsSpanData.getBaggageItem(name());
         return ret == null ? defaultValue : ret;
     }
 

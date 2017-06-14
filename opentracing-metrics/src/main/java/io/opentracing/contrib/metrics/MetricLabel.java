@@ -13,10 +13,6 @@
  */
 package io.opentracing.contrib.metrics;
 
-import java.util.Map;
-
-import io.opentracing.BaseSpan;
-
 /**
  * This interface represents a label associated with a reported metric type. For each sampled
  * metric instance, it can be used to determine the name and value of the label.
@@ -25,7 +21,7 @@ import io.opentracing.BaseSpan;
 public interface MetricLabel {
 
     /**
-     * This method returns the name of the metric tag.
+     * This method returns the name of the metric label.
      *
      * @return The name
      */
@@ -40,13 +36,11 @@ public interface MetricLabel {
     Object defaultValue();
 
     /**
-     * This method returns a metric tag value.
+     * This method returns a metric label value.
      *
-     * @param span The span
-     * @param operation The operation
-     * @param tags The tags
+     * @param metricsSpanData The metrics span data from which to derive the label value
      * @return The value, if null will suppress the metrics for the span being reported
      */
-    Object value(BaseSpan<?> span, String operation, Map<String,Object> tags);
+    Object value(MetricsSpanData metricsSpanData);
 
 }

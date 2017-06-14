@@ -13,17 +13,41 @@
  */
 package io.opentracing.contrib.metrics;
 
+import java.util.Map;
+
+import io.opentracing.SpanContext;
+
 /**
- * This interface is used to notify when metrics associated with a finished span can be reported.
+ * This interface provides access to relevant data about a span, from which metrics can be
+ * derived.
  *
  */
-public interface MetricsReporter {
+public interface MetricsSpanData {
 
     /**
-     * This method reports metrics based on the details associated with the supplied {@link MetricsSpanData}.
-     *
-     * @param metricSpanData Span data including operation, tags, baggage and duration
+     * @return The span context
      */
-    void reportSpan(MetricsSpanData metricSpanData);
+    SpanContext getSpanContext();
+
+    /**
+     * @return The span's operation name
+     */
+    String getOperationName();
+
+    /**
+     * @return The span tags
+     */
+    Map<String,Object> getTags();
+
+    /**
+     * @name key The key
+     * @return The baggage item if found, or null
+     */
+    String getBaggageItem(String key);
+
+    /**
+     * @return The duration, in microseconds
+     */
+    long getDuration();
 
 }
