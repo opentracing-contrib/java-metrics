@@ -4,7 +4,7 @@
 
   <groupId>io.opentracing.contrib</groupId>
   <artifactId>opentracing-metrics-parent</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.3</version>
   <packaging>pom</packaging>
 
   <name>OpenTracing Metrics</name>
@@ -15,7 +15,7 @@
     <url>https://github.com/opentracing-contrib/java-metrics</url>
     <connection>scm:git:https://github.com/opentracing-contrib/java-metrics.git</connection>
     <developerConnection>scm:git:https://github.com/opentracing-contrib/java-metrics.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>0.0.3</tag>
   </scm>
 
   <licenses>
