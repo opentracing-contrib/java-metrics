@@ -46,9 +46,11 @@ public class MetricsBaseSpan<T extends BaseSpan<?>> implements BaseSpan<T> {
         return wrappedSpan.getBaggageItem(name);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T setBaggageItem(String name, String value) {
-        return this.setBaggageItem(name, value);
+        wrappedSpan.setBaggageItem(name, value);
+        return (T)this;
     }
 
     @SuppressWarnings("unchecked")
