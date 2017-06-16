@@ -45,5 +45,4 @@ public class ConstMetricLabel implements MetricLabel {
         return value;
     }
 
-    
 }
