@@ -36,16 +36,21 @@ Label types:
 
 * ConstMetricLabel
 
-When a label will have a constant value, e.g. service name
+This label type returns a constant value, e.g. service name
 
 * OperationMetricLabel
 
-The label tags the span's operation name
+This label type returns the span's operation name
 
-* TagBaggageMetricLabel
+* TagMetricLabel
 
-This label attempts to obtain the value associated with the requested name from the span tags, followed
-by the span's baggage, and if not found uses a default value.
+This label type attempts to obtain the value associated with the requested name from the span's tags,
+and if not found uses a default value.
+
+* BaggageMetricLabel
+
+This label type attempts to obtain the value associated with the requested name from the span's baggage items,
+and if not found uses a default value.
 
 
 ### Default Labels
@@ -62,7 +67,7 @@ for the span will not be recorded
 
 ### Adding Metric Labels
 
-An application may want to add specific labels to help classify the metrics being reported by each
+An application may want to add specific labels to help classify the metrics being reported for each
 span.
 
 For example, many `Tracer` implementations associate spans with a service name. This can also be achieved
