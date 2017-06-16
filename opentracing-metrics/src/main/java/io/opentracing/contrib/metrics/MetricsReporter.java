@@ -13,25 +13,17 @@
  */
 package io.opentracing.contrib.metrics;
 
-import io.opentracing.Tracer;
-import io.opentracing.contrib.metrics.internal.tracer.MetricsTracer;
-
 /**
- * This is the main entry point into the metrics capability, enabling a {@link Tracer}
- * instance to be decorated with the metrics reporting functionality.
+ * This interface is used to notify when metrics associated with a finished span can be reported.
  *
  */
-public class Metrics {
+public interface MetricsReporter {
 
     /**
-     * This method decorates a supplied tracer with the ability to report span
-     * based metrics to the supplied metrics reporter.
+     * This method reports metrics based on the details associated with the supplied {@link SpanData}.
      *
-     * @param tracer The tracer
-     * @param reporter The reporter
-     * @return The decorated tracer
+     * @param metricSpanData Span data including operation, tags, baggage and duration
      */
-    public static Tracer decorate(Tracer tracer, MetricsReporter reporter) {
-        return new MetricsTracer(tracer, reporter);
-    }
+    void reportSpan(SpanData metricSpanData);
+
 }
