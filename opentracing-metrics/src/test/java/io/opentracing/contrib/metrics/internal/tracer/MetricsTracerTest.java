@@ -87,7 +87,6 @@ public class MetricsTracerTest {
             MockSpan span = spans.get(i);
             assertEquals(span.operationName(), span.tags().get("spanName"));
             assertEquals(span.operationName(), span.tags().get("additionalTag"));
-            assertEquals(span.context(), captured.get(i).getSpanContext());
         }
 
         assertTrue(captured.get(0).getDuration() < captured.get(1).getDuration());

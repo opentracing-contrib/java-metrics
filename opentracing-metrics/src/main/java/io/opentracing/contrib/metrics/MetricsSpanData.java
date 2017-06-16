@@ -15,19 +15,12 @@ package io.opentracing.contrib.metrics;
 
 import java.util.Map;
 
-import io.opentracing.SpanContext;
-
 /**
  * This interface provides access to relevant data about a span, from which metrics can be
  * derived.
  *
  */
 public interface MetricsSpanData {
-
-    /**
-     * @return The span context
-     */
-    SpanContext getSpanContext();
 
     /**
      * @return The span's operation name

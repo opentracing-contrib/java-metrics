@@ -13,19 +13,31 @@
  */
 package io.opentracing.contrib.metrics.internal.tracer;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
+import io.opentracing.contrib.metrics.MetricsSpanData;
 
-public class MetricsSpan implements Span  {
+public class MetricsSpan implements Span, MetricsSpanData  {
 
     private final Span wrappedSpan;
     private final MetricsTracer tracer;
 
-    public MetricsSpan(MetricsTracer tracer, Span span) {
+    private String operationName;
+    private final long startNanoTime;
+    private long finishNanoTime;
+    private final Map<String,Object> tags;
+
+    public MetricsSpan(MetricsTracer tracer, Span span, String operationName,
+            long startNanoTime, Map<String,Object> tags) {
         this.tracer = tracer;
         this.wrappedSpan = span;
+        this.operationName = operationName;
+        this.startNanoTime = startNanoTime;
+        this.tags = tags;
     }
 
     protected Span span() {
@@ -39,6 +51,16 @@ public class MetricsSpan implements Span  {
     @Override
     public SpanContext context() {
         return wrappedSpan.context();
+    }
+
+    @Override
+    public Span setOperationName(String operationName) {
+        wrappedSpan.setOperationName(operationName);
+        return this;
+    }
+
+    public String getOperationName() {
+        return operationName;
     }
 
     @Override
@@ -77,31 +99,50 @@ public class MetricsSpan implements Span  {
     }
 
     @Override
-    public Span setOperationName(String operationName) {
-        wrappedSpan.setOperationName(operationName);
-        tracer.spanUpdateOperation(wrappedSpan.context(), operationName);
-        return this;
-    }
-
-    @Override
     public Span setTag(String key, String value) {
         wrappedSpan.setTag(key, value);
-        tracer.spanUpdateTag(wrappedSpan.context(), key, value);
+        tags.put(key, value);
         return this;
     }
 
     @Override
     public Span setTag(String key, boolean value) {
         wrappedSpan.setTag(key, value);
-        tracer.spanUpdateTag(wrappedSpan.context(), key, value);
+        tags.put(key, value);
         return this;
     }
 
     @Override
     public Span setTag(String key, Number value) {
         wrappedSpan.setTag(key, value);
-        tracer.spanUpdateTag(wrappedSpan.context(), key, value);
+        tags.put(key, value);
         return this;
+    }
+
+    @Override
+    public Map<String,Object> getTags() {
+        return Collections.unmodifiableMap(tags);
+    }
+
+    @Override
+    public void finish() {
+        wrappedSpan.finish();
+        reportMetrics();
+    }
+
+    @Override
+    public void finish(long finishMicros) {
+        wrappedSpan.finish(finishMicros);
+        reportMetrics();
+    }
+
+    private void reportMetrics() {
+        finishNanoTime = System.nanoTime();
+        tracer.getReporter().reportSpan(this);
+    }
+
+    public long getDuration() {
+        return TimeUnit.NANOSECONDS.toMicros(finishNanoTime - startNanoTime);
     }
 
     @SuppressWarnings("deprecation")
@@ -114,18 +155,6 @@ public class MetricsSpan implements Span  {
     @Override
     public Span log(long timestampMicroseconds, String eventName, Object payload) {
         return wrappedSpan.log(timestampMicroseconds, eventName, payload);
-    }
-
-    @Override
-    public void finish() {
-        wrappedSpan.finish();
-        metricsTracer().spanFinished(wrappedSpan.context(), System.nanoTime());
-    }
-
-    @Override
-    public void finish(long finishMicros) {
-        wrappedSpan.finish(finishMicros);
-        metricsTracer().spanFinished(wrappedSpan.context(), System.nanoTime());
     }
 
 }
