@@ -115,6 +115,19 @@ using the servlet with a Jetty server:
 	server.start();
 ```
 
+## Known Issues
+
+### Only works with ActiveSpanSource implementations that don't require a tracer specific Span implementation
+
+The current mechanism uses a wrapper tracer implementation to identify when a
+[span has finished](https://github.com/opentracing/opentracing-java/issues/155). This requires
+a wrapped `Span` to be passed to the `ActiveSpanSource.makeActive` method, and therefore will fail if the
+`ActiveSpanSource` implementation has an expectation of receiving a particular `Span` implementation.
+
+This wrapper approach is only being used as a short term workaround until a
+[`TracerObserver`](https://github.com/opentracing/specification/issues/76) mechanism is available.
+
+
 ## Release
 Follow instructions in [RELEASE](RELEASE.md)
 
