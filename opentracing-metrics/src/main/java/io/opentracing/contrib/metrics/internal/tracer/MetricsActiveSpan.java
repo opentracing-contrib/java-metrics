@@ -32,7 +32,7 @@ public class MetricsActiveSpan extends MetricsBaseSpan<ActiveSpan> implements Ac
     }
 
     public void close() {
-        span().close();
+        deactivate();
     }
 
     private static class MetricsContinuation implements Continuation {
@@ -43,7 +43,7 @@ public class MetricsActiveSpan extends MetricsBaseSpan<ActiveSpan> implements Ac
         public MetricsContinuation(MetricsTracer tracer, SpanContext context, Continuation continuation) {
             this.tracer = tracer;
             this.continuation = continuation;
-            tracer.spanDeactivated(context);
+            tracer.spanCreatedContinuation(context);
         }
 
         @Override
