@@ -46,12 +46,12 @@ public class MetricsTracer implements Tracer {
 
     @Override
     public ActiveSpan activeSpan() {
-        return new MetricsActiveSpan(this, wrappedTracer.activeSpan());
+        return wrappedTracer.activeSpan();
     }
 
     @Override
     public ActiveSpan makeActive(Span span) {
-        return new MetricsActiveSpan(this, wrappedTracer.makeActive(span));
+        return wrappedTracer.makeActive(span);
     }
 
     @Override
@@ -257,9 +257,7 @@ public class MetricsTracer implements Tracer {
 
         @Override
         public ActiveSpan startActive() {
-            ActiveSpan activeSpan = new MetricsActiveSpan(MetricsTracer.this, wrappedBuilder.startActive());
-            spanStarted(activeSpan, operationName, startNanoTime, tags);
-            return activeSpan;
+            return wrappedTracer.makeActive(startManual());
         }
 
         @Override
