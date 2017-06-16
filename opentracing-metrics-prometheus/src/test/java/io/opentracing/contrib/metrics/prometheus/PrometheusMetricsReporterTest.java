@@ -27,7 +27,7 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 import io.opentracing.tag.Tags;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
@@ -55,12 +55,12 @@ public class PrometheusMetricsReporterTest {
                 .withConstLabel("span.kind", Tags.SPAN_KIND_CLIENT) // Override the default, to make sure span metrics reported
                 .build();
 
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getOperationName()).thenReturn("testop");
-        when(metricsSpanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
-        when(metricsSpanData.getDuration()).thenReturn(100000L);
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getOperationName()).thenReturn("testop");
+        when(spanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
+        when(spanData.getDuration()).thenReturn(100000L);
 
-        reporter.reportSpan(metricsSpanData);
+        reporter.reportSpan(spanData);
 
         // Check span duration
         List<MetricFamilySamples> samples = reporter.getHistogram().collect();
@@ -78,12 +78,12 @@ public class PrometheusMetricsReporterTest {
         Map<String,Object> spanTags = new HashMap<String,Object>();
         spanTags.put(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
 
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getOperationName()).thenReturn("testop");
-        when(metricsSpanData.getTags()).thenReturn(spanTags);
-        when(metricsSpanData.getDuration()).thenReturn(100000L);
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getOperationName()).thenReturn("testop");
+        when(spanData.getTags()).thenReturn(spanTags);
+        when(spanData.getDuration()).thenReturn(100000L);
 
-        reporter.reportSpan(metricsSpanData);
+        reporter.reportSpan(spanData);
 
         // Check histogram
         List<MetricFamilySamples> samples = reporter.getHistogram().collect();

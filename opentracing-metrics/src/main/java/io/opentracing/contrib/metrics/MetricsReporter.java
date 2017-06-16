@@ -20,10 +20,10 @@ package io.opentracing.contrib.metrics;
 public interface MetricsReporter {
 
     /**
-     * This method reports metrics based on the details associated with the supplied {@link MetricsSpanData}.
+     * This method reports metrics based on the details associated with the supplied {@link SpanData}.
      *
      * @param metricSpanData Span data including operation, tags, baggage and duration
      */
-    void reportSpan(MetricsSpanData metricSpanData);
+    void reportSpan(SpanData metricSpanData);
 
 }

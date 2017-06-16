@@ -14,7 +14,7 @@
 package io.opentracing.contrib.metrics.label;
 
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 
 /**
  * This implementation attempts to obtain the metric label value from the span's
@@ -42,8 +42,8 @@ public class BaggageMetricLabel implements MetricLabel {
     }
 
     @Override
-    public Object value(MetricsSpanData metricsSpanData) {
-        Object ret = metricsSpanData.getBaggageItem(name());
+    public Object value(SpanData spanData) {
+        Object ret = spanData.getBaggageItem(name());
         return ret == null ? defaultValue : ret;
     }
 

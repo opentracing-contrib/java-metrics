@@ -38,9 +38,9 @@ public interface MetricLabel {
     /**
      * This method returns a metric label value.
      *
-     * @param metricsSpanData The metrics span data from which to derive the label value
+     * @param spanData The span data from which to derive the label value
      * @return The value, if null will suppress the metrics for the span being reported
      */
-    Object value(MetricsSpanData metricsSpanData);
+    Object value(SpanData spanData);
 
 }

@@ -14,7 +14,7 @@
 package io.opentracing.contrib.metrics.label;
 
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 
 /**
  * This implementation returns a constant value for the metric label.
@@ -41,7 +41,7 @@ public class ConstMetricLabel implements MetricLabel {
     }
 
     @Override
-    public Object value(MetricsSpanData metricsSpanData) {
+    public Object value(SpanData spanData) {
         return value;
     }
 

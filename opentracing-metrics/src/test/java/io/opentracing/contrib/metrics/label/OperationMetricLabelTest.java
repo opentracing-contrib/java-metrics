@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 import org.junit.Test;
 
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 import io.opentracing.contrib.metrics.label.OperationMetricLabel;
 
 public class OperationMetricLabelTest {
@@ -28,9 +28,9 @@ public class OperationMetricLabelTest {
     @Test
     public void testOperationLabel() {
         MetricLabel label = new OperationMetricLabel();
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getOperationName()).thenReturn("TestOperation");
-        assertEquals("TestOperation", label.value(metricsSpanData));
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getOperationName()).thenReturn("TestOperation");
+        assertEquals("TestOperation", label.value(spanData));
      }
 
 }

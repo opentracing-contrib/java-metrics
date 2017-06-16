@@ -24,7 +24,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 import io.opentracing.contrib.metrics.label.TagMetricLabel;
 
 public class TagMetricLabelTest {
@@ -35,10 +35,10 @@ public class TagMetricLabelTest {
     @Test
     public void testLabelDefault() {
         MetricLabel label = new TagMetricLabel(TEST_LABEL, TEST_LABEL_DEFAULT);
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
         assertEquals(TEST_LABEL, label.name());
-        assertEquals(TEST_LABEL_DEFAULT, label.value(metricsSpanData));
+        assertEquals(TEST_LABEL_DEFAULT, label.value(spanData));
     }
 
     @Test
@@ -46,9 +46,9 @@ public class TagMetricLabelTest {
         MetricLabel label = new TagMetricLabel(TEST_LABEL, TEST_LABEL_DEFAULT);
         Map<String,Object> tags = new HashMap<String,Object>();
         tags.put(TEST_LABEL, "TagValue");
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getTags()).thenReturn(tags);
-        assertEquals("TagValue", label.value(metricsSpanData));
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getTags()).thenReturn(tags);
+        assertEquals("TagValue", label.value(spanData));
     }
 
     @Test
@@ -56,9 +56,9 @@ public class TagMetricLabelTest {
         MetricLabel label = new TagMetricLabel(TEST_LABEL, TEST_LABEL_DEFAULT);
         Map<String,Object> tags = new HashMap<String,Object>();
         tags.put(TEST_LABEL, null);
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getTags()).thenReturn(tags);
-        assertEquals(TEST_LABEL_DEFAULT, label.value(metricsSpanData));
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getTags()).thenReturn(tags);
+        assertEquals(TEST_LABEL_DEFAULT, label.value(spanData));
     }
 
 }

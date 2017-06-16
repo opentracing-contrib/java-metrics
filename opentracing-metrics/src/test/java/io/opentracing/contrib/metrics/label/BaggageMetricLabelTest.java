@@ -19,7 +19,7 @@ import org.junit.Test;
 import static org.mockito.Mockito.*;
 
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 
 public class BaggageMetricLabelTest {
@@ -30,22 +30,22 @@ public class BaggageMetricLabelTest {
     @Test
     public void testLabelDefault() {
         MetricLabel label = new BaggageMetricLabel(TEST_LABEL, TEST_LABEL_DEFAULT);
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getBaggageItem(anyString())).thenReturn(null);
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getBaggageItem(anyString())).thenReturn(null);
 
         assertEquals(TEST_LABEL, label.name());
-        assertEquals(TEST_LABEL_DEFAULT, label.value(metricsSpanData));
-        verify(metricsSpanData, times(1)).getBaggageItem(TEST_LABEL);
+        assertEquals(TEST_LABEL_DEFAULT, label.value(spanData));
+        verify(spanData, times(1)).getBaggageItem(TEST_LABEL);
     }
 
     @Test
     public void testLabelFromBaggage() {
         MetricLabel label = new BaggageMetricLabel(TEST_LABEL, TEST_LABEL_DEFAULT);
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getBaggageItem(anyString())).thenReturn("BaggageValue");
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getBaggageItem(anyString())).thenReturn("BaggageValue");
         
-        assertEquals("BaggageValue", label.value(metricsSpanData));
-        verify(metricsSpanData, times(1)).getBaggageItem(TEST_LABEL);
+        assertEquals("BaggageValue", label.value(spanData));
+        verify(spanData, times(1)).getBaggageItem(TEST_LABEL);
     }
 
 }

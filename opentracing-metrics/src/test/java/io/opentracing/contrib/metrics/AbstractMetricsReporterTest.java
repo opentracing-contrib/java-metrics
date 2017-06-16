@@ -33,7 +33,7 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Collections.<MetricLabel>singletonList(new ConstMetricLabel("service", "TestService"))) {
             @Override
-            public void reportSpan(MetricsSpanData metricsSpanData) {
+            public void reportSpan(SpanData spanData) {
             }
         };
 
@@ -48,7 +48,7 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Collections.<MetricLabel>emptyList()) {
             @Override
-            public void reportSpan(MetricsSpanData metricsSpanData) {
+            public void reportSpan(SpanData spanData) {
             }
         };
 
@@ -62,7 +62,7 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Collections.<MetricLabel>emptyList()) {
             @Override
-            public void reportSpan(MetricsSpanData metricsSpanData) {
+            public void reportSpan(SpanData spanData) {
             }
         };
 
@@ -70,11 +70,11 @@ public class AbstractMetricsReporterTest {
         spanTags.put(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_SERVER);
         spanTags.put(Tags.ERROR.getKey(), true);
 
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getOperationName()).thenReturn("testop");
-        when(metricsSpanData.getTags()).thenReturn(spanTags);
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getOperationName()).thenReturn("testop");
+        when(spanData.getTags()).thenReturn(spanTags);
 
-        String[] labelValues = reporter.getLabelValues(metricsSpanData);
+        String[] labelValues = reporter.getLabelValues(spanData);
 
         assertEquals(3, labelValues.length);
         assertEquals(Tags.SPAN_KIND_SERVER, labelValues[1]);
@@ -93,11 +93,11 @@ public class AbstractMetricsReporterTest {
                 return null;
             }
             @Override
-            public Object value(MetricsSpanData metricsSpanData) {
-                Object error = metricsSpanData.getTags().containsKey(name())
-                        ? metricsSpanData.getTags().get(name()) : false;
-                if (metricsSpanData.getTags().containsKey(Tags.HTTP_STATUS.getKey())) {
-                    int status = (int)metricsSpanData.getTags().get(Tags.HTTP_STATUS.getKey());
+            public Object value(SpanData spanData) {
+                Object error = spanData.getTags().containsKey(name())
+                        ? spanData.getTags().get(name()) : false;
+                if (spanData.getTags().containsKey(Tags.HTTP_STATUS.getKey())) {
+                    int status = (int)spanData.getTags().get(Tags.HTTP_STATUS.getKey());
                     if (status > 400) {
                         error = "4xx";
                     } else if (status > 500) {
@@ -113,7 +113,7 @@ public class AbstractMetricsReporterTest {
         AbstractMetricsReporter reporter = new AbstractMetricsReporter(
                 Arrays.<MetricLabel>asList(new ConstMetricLabel("service", "TestService"), errorMetricTag)) {
             @Override
-            public void reportSpan(MetricsSpanData metricsSpanData) {
+            public void reportSpan(SpanData spanData) {
             }
         };
 
@@ -124,11 +124,11 @@ public class AbstractMetricsReporterTest {
         spanTags.put(Tags.HTTP_STATUS.getKey(), 401);
         spanTags.put(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT);
 
-        MetricsSpanData metricsSpanData = mock(MetricsSpanData.class);
-        when(metricsSpanData.getOperationName()).thenReturn("testop");
-        when(metricsSpanData.getTags()).thenReturn(spanTags);
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getOperationName()).thenReturn("testop");
+        when(spanData.getTags()).thenReturn(spanTags);
 
-        String[] labelValues = reporter.getLabelValues(metricsSpanData);
+        String[] labelValues = reporter.getLabelValues(spanData);
  
         assertEquals(4, labelValues.length);
         assertEquals("TestService", labelValues[0]);

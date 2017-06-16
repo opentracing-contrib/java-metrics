@@ -14,7 +14,7 @@
 package io.opentracing.contrib.metrics.label;
 
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 
 /**
  * This implementation obtains the metric label value from the span's
@@ -37,8 +37,8 @@ public class OperationMetricLabel implements MetricLabel {
     }
 
     @Override
-    public Object value(MetricsSpanData metricsSpanData) {
-        return metricsSpanData.getOperationName();
+    public Object value(SpanData spanData) {
+        return spanData.getOperationName();
     }
 
 }

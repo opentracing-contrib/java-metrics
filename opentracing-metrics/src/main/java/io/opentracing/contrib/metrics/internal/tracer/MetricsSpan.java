@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 
-public class MetricsSpan implements Span, MetricsSpanData  {
+public class MetricsSpan implements Span, SpanData  {
 
     private final Span wrappedSpan;
     private final MetricsTracer tracer;

@@ -18,7 +18,7 @@ import java.util.List;
 import io.opentracing.contrib.metrics.AbstractMetricsReporter;
 import io.opentracing.contrib.metrics.MetricLabel;
 import io.opentracing.contrib.metrics.MetricsReporter;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 import io.opentracing.contrib.metrics.label.ConstMetricLabel;
 import io.opentracing.contrib.metrics.label.TagMetricLabel;
@@ -43,11 +43,11 @@ public class PrometheusMetricsReporter extends AbstractMetricsReporter implement
     }
 
     @Override
-    public void reportSpan(MetricsSpanData metricsSpanData) {
-        String[] labelValues = getLabelValues(metricsSpanData);
+    public void reportSpan(SpanData spanData) {
+        String[] labelValues = getLabelValues(spanData);
         if (labelValues != null) {
             // Convert microseconds to seconds
-            this.histogram.labels(labelValues).observe(metricsSpanData.getDuration() / (double)1000000);
+            this.histogram.labels(labelValues).observe(spanData.getDuration() / (double)1000000);
         }
     }
 

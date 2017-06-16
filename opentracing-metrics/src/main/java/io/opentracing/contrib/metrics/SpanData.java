@@ -20,7 +20,7 @@ import java.util.Map;
  * derived.
  *
  */
-public interface MetricsSpanData {
+public interface SpanData {
 
     /**
      * @return The span's operation name

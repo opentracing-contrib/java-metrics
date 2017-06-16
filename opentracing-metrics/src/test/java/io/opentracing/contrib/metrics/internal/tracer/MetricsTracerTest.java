@@ -31,7 +31,7 @@ import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.metrics.Metrics;
 import io.opentracing.contrib.metrics.MetricsReporter;
-import io.opentracing.contrib.metrics.MetricsSpanData;
+import io.opentracing.contrib.metrics.SpanData;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
@@ -39,7 +39,7 @@ import io.opentracing.util.ThreadLocalActiveSpanSource;
 public class MetricsTracerTest {
 
     @Captor
-    private ArgumentCaptor<MetricsSpanData> metricsSpanDataCaptor;
+    private ArgumentCaptor<SpanData> spanDataCaptor;
     
     @Before
     public void init(){
@@ -78,9 +78,9 @@ public class MetricsTracerTest {
         List<MockSpan> spans = tracer.finishedSpans();
         assertEquals(2, spans.size());
 
-        Mockito.verify(reporter, Mockito.times(2)).reportSpan(metricsSpanDataCaptor.capture());
+        Mockito.verify(reporter, Mockito.times(2)).reportSpan(spanDataCaptor.capture());
 
-        List<MetricsSpanData> captured = metricsSpanDataCaptor.getAllValues();
+        List<SpanData> captured = spanDataCaptor.getAllValues();
         assertEquals(captured.size(), spans.size());
 
         for (int i=0; i < spans.size(); i++) {

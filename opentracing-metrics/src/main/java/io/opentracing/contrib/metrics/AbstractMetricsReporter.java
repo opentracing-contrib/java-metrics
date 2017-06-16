@@ -66,13 +66,13 @@ public abstract class AbstractMetricsReporter implements MetricsReporter {
     /**
      * This method derives the values for the labels associated with the metrics reporter.
      *
-     * @param metricsSpanData The metrics span data
+     * @param spanData The span data
      * @return The label values, or null if sample should not be reported
      */
-    protected String[] getLabelValues(MetricsSpanData metricsSpanData) {
+    protected String[] getLabelValues(SpanData spanData) {
         String[] values = new String[metricLabels.length];
         for (int i=0; i < values.length; i++) {
-            Object value = metricLabels[i].value(metricsSpanData);
+            Object value = metricLabels[i].value(spanData);
             if (value == null) {
                 // Don't report span as not all labels are specified
                 // TODO: May need to provide debug log to help if metrics unexpectedly not reported
