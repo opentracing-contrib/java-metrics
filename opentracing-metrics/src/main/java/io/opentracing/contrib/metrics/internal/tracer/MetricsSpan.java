@@ -14,8 +14,8 @@
 package io.opentracing.contrib.metrics.internal.tracer;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.opentracing.Span;
@@ -38,7 +38,7 @@ public class MetricsSpan implements Span, SpanData  {
         this.wrappedSpan = span;
         this.operationName = operationName;
         this.startNanoTime = startNanoTime;
-        this.tags = new HashMap<String,Object>();
+        this.tags = new ConcurrentHashMap<String,Object>();
         if (tags != null) {
             this.tags.putAll(tags);
         }
