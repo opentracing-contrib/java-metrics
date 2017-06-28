@@ -13,8 +13,11 @@
  */
 package io.opentracing.contrib.metrics;
 
+import java.util.Collections;
+import java.util.List;
+
 import io.opentracing.Tracer;
-import io.opentracing.contrib.metrics.internal.tracer.MetricsTracer;
+import io.opentracing.contrib.api.tracer.APIExtensionsTracer;
 
 /**
  * This is the main entry point into the metrics capability, enabling a {@link Tracer}
@@ -25,13 +28,27 @@ public class Metrics {
 
     /**
      * This method decorates a supplied tracer with the ability to report span
-     * based metrics to the supplied metrics reporter.
+     * based metrics to the supplied {@link MetricsReporter}.
      *
      * @param tracer The tracer
-     * @param reporter The reporter
+     * @param reporter The metrics reporter
      * @return The decorated tracer
      */
     public static Tracer decorate(Tracer tracer, MetricsReporter reporter) {
-        return new MetricsTracer(tracer, reporter);
+        return decorate(tracer, Collections.singletonList(reporter));
+    }
+
+    /**
+     * This method decorates a supplied tracer with the ability to report span
+     * based metrics to the supplied list of {@link MetricsReporter}.
+     *
+     * @param tracer The tracer
+     * @param reporters The list of metric reporters
+     * @return The decorated tracer
+     */
+    public static Tracer decorate(Tracer tracer, List<MetricsReporter> reporters) {
+        APIExtensionsTracer ret = new APIExtensionsTracer(tracer);
+        ret.addTracerObserver(new MetricsObserver(reporters));
+        return ret;
     }
 }

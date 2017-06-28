@@ -15,10 +15,11 @@ package io.opentracing.contrib.metrics.prometheus;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.opentracing.contrib.api.SpanData;
 import io.opentracing.contrib.metrics.AbstractMetricsReporter;
 import io.opentracing.contrib.metrics.MetricLabel;
 import io.opentracing.contrib.metrics.MetricsReporter;
-import io.opentracing.contrib.metrics.SpanData;
 import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 import io.opentracing.contrib.metrics.label.ConstMetricLabel;
 import io.opentracing.contrib.metrics.label.TagMetricLabel;

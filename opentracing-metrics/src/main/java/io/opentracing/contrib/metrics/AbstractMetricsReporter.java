@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsReporter;
+
+import io.opentracing.contrib.api.SpanData;
 import io.opentracing.contrib.metrics.label.OperationMetricLabel;
 import io.opentracing.contrib.metrics.label.TagMetricLabel;
 import io.opentracing.tag.Tags;

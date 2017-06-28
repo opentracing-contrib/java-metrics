@@ -20,9 +20,8 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
+import io.opentracing.contrib.api.SpanData;
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.SpanData;
-import io.opentracing.contrib.metrics.label.OperationMetricLabel;
 
 public class OperationMetricLabelTest {
 

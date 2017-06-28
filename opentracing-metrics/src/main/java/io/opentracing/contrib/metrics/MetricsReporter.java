@@ -13,6 +13,8 @@
  */
 package io.opentracing.contrib.metrics;
 
+import io.opentracing.contrib.api.SpanData;
+
 /**
  * This interface is used to notify when metrics associated with a finished span can be reported.
  *

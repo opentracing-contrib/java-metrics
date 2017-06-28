@@ -13,7 +13,8 @@
  */
 package io.opentracing.contrib.metrics.prometheus;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,12 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import io.opentracing.contrib.metrics.SpanData;
+
+import io.opentracing.contrib.api.SpanData;
+import io.opentracing.contrib.metrics.MetricLabel;
+import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 import io.opentracing.tag.Tags;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;

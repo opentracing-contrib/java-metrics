@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+
+import io.opentracing.contrib.api.SpanData;
 import io.opentracing.contrib.metrics.label.ConstMetricLabel;
 import io.opentracing.tag.Tags;
 

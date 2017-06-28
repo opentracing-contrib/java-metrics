@@ -18,7 +18,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.label.ConstMetricLabel;
 
 public class ConstMetricLabelTest {
 
