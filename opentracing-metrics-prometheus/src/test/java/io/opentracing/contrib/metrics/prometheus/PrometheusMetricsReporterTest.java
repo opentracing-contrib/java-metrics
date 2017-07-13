@@ -76,7 +76,6 @@ public class PrometheusMetricsReporterTest {
         assertEquals("MyName", samples.get(0).name);
     }
 
-
     @Test
     public void testWithTagAndBaggageLabels() {
         PrometheusMetricsReporter reporter = PrometheusMetricsReporter.newMetricsReporter()
@@ -105,7 +104,6 @@ public class PrometheusMetricsReporterTest {
         }
     }
 
-
     @Test
     public void testWithCustomLabel() {
         MetricLabel metricLabel = new BaggageMetricLabel(METRIC_LABEL_NAME, METRIC_LABEL_VALUE);
@@ -131,7 +129,6 @@ public class PrometheusMetricsReporterTest {
             assertTrue("Expected MetricLabel with value " + METRIC_LABEL_VALUE , sample.labelValues.contains(METRIC_LABEL_VALUE));
         }
     }
-
 
     @Test
     public void testReportSpan() {
