@@ -14,6 +14,7 @@
 package io.opentracing.contrib.metrics.label;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +32,7 @@ public class OperationMetricLabelTest {
         SpanData spanData = mock(SpanData.class);
         when(spanData.getOperationName()).thenReturn("TestOperation");
         assertEquals("TestOperation", label.value(spanData));
-     }
+        assertNull(label.defaultValue());
+    }
 
 }

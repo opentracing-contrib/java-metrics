@@ -39,6 +39,7 @@ public class TagMetricLabelTest {
         when(spanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
         assertEquals(TEST_LABEL, label.name());
         assertEquals(TEST_LABEL_DEFAULT, label.value(spanData));
+        assertEquals(TEST_LABEL_DEFAULT, label.defaultValue());
     }
 
     @Test

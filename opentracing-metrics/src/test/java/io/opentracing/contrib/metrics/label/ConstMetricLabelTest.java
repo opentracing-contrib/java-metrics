@@ -27,6 +27,7 @@ public class ConstMetricLabelTest {
         MetricLabel label = new ConstMetricLabel("TestLabel", "TestValue");
         assertEquals("TestLabel", label.name());
         assertEquals("TestValue", label.value(null));
+        assertEquals("TestValue", label.defaultValue());
      }
 
 }
