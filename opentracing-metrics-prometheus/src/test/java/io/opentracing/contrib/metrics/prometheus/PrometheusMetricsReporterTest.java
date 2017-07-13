@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.opentracing.contrib.metrics.MetricLabel;
+import io.opentracing.contrib.metrics.label.BaggageMetricLabel;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +37,12 @@ import io.prometheus.client.CollectorRegistry;
 
 public class PrometheusMetricsReporterTest {
 
+    public static final String METRIC_LABEL_NAME = "foo";
+    public static final String METRIC_LABEL_VALUE = "bar";
+    public static final String BAGGAGE_LABEL_NAME = "transaction";
+    public static final String BAGGAGE_LABEL_VALUE = "n/a";
+    public static final String TAG_LABEL_NAME = "Tag";
+    public static final String TAG_LABEL_VALUE = "IAmATag";
     private CollectorRegistry collectorRegistry;
 
     @Before
@@ -66,6 +74,60 @@ public class PrometheusMetricsReporterTest {
         List<MetricFamilySamples> samples = reporter.getHistogram().collect();
         assertEquals(1, samples.size());
         assertEquals("MyName", samples.get(0).name);
+    }
+
+    @Test
+    public void testWithTagAndBaggageLabels() {
+        PrometheusMetricsReporter reporter = PrometheusMetricsReporter.newMetricsReporter()
+                .withName("MyName")
+                .withBaggageLabel(BAGGAGE_LABEL_NAME, BAGGAGE_LABEL_VALUE)
+                .withTagLabel(TAG_LABEL_NAME, TAG_LABEL_VALUE)
+                .withCollectorRegistry(collectorRegistry)
+                .withConstLabel("span.kind", Tags.SPAN_KIND_CLIENT) // Override the default, to make sure span metrics reported
+                .build();
+
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getOperationName()).thenReturn("testop");
+        when(spanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
+        when(spanData.getDuration()).thenReturn(100000L);
+
+        reporter.reportSpan(spanData);
+
+        List<MetricFamilySamples> samples = reporter.getHistogram().collect();
+        assertEquals(1, samples.size());
+
+        for (Sample sample : samples.get(0).samples) {
+            assertTrue("Expected BaggageLabel with name " + BAGGAGE_LABEL_NAME, sample.labelNames.contains(BAGGAGE_LABEL_NAME));
+            assertTrue("Expected BaggageLabel with value " + BAGGAGE_LABEL_VALUE, sample.labelValues.contains(BAGGAGE_LABEL_VALUE));
+            assertTrue("Expected TagLabel with name " + TAG_LABEL_NAME, sample.labelNames.contains(TAG_LABEL_NAME));
+            assertTrue("Expected TagLabel with value " + TAG_LABEL_VALUE, sample.labelValues.contains(TAG_LABEL_VALUE));
+        }
+    }
+
+    @Test
+    public void testWithCustomLabel() {
+        MetricLabel metricLabel = new BaggageMetricLabel(METRIC_LABEL_NAME, METRIC_LABEL_VALUE);
+        PrometheusMetricsReporter reporter = PrometheusMetricsReporter.newMetricsReporter()
+                .withName("MyName")
+                .withCollectorRegistry(collectorRegistry)
+                .withCustomLabel(metricLabel)
+                .withConstLabel("span.kind", Tags.SPAN_KIND_CLIENT) // Override the default, to make sure span metrics reported
+                .build();
+
+        SpanData spanData = mock(SpanData.class);
+        when(spanData.getOperationName()).thenReturn("testop");
+        when(spanData.getTags()).thenReturn(Collections.<String,Object>emptyMap());
+        when(spanData.getDuration()).thenReturn(100000L);
+
+        reporter.reportSpan(spanData);
+
+        List<MetricFamilySamples> samples = reporter.getHistogram().collect();
+        assertEquals(1, samples.size());
+
+        for (Sample sample : samples.get(0).samples) {
+            assertTrue("Expected MetricLabel with name " + METRIC_LABEL_NAME, sample.labelNames.contains(METRIC_LABEL_NAME));
+            assertTrue("Expected MetricLabel with value " + METRIC_LABEL_VALUE , sample.labelValues.contains(METRIC_LABEL_VALUE));
+        }
     }
 
     @Test
