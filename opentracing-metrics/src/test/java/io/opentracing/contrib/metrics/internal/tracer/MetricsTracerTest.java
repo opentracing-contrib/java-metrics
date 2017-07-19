@@ -181,10 +181,8 @@ public class MetricsTracerTest {
             child = span1;
         }
 
-        assertEquals(child.parentId(), parent.context().spanId());
+        assertEquals("Child's parent id should be spanId of parent", child.parentId(), parent.context().spanId());
         assertEquals(0, parent.parentId());
-
-        System.out.println("How do we verify parentage?");
     }
 
 }
