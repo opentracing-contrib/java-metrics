@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.opentracing.contrib.metrics.internal.tracer;
+package io.opentracing.contrib.metrics;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,14 +30,12 @@ import org.mockito.MockitoAnnotations;
 
 import io.opentracing.ActiveSpan;
 import io.opentracing.Tracer;
-import io.opentracing.contrib.metrics.Metrics;
-import io.opentracing.contrib.metrics.MetricsReporter;
-import io.opentracing.contrib.metrics.SpanData;
+import io.opentracing.contrib.api.SpanData;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
 import io.opentracing.util.ThreadLocalActiveSpanSource;
 
-public class MetricsTracerTest {
+public class MetricsTest {
 
     @Captor
     private ArgumentCaptor<SpanData> spanDataCaptor;
@@ -118,12 +116,12 @@ public class MetricsTracerTest {
         Object booleanTag = tags.get("booleanTag");
         assertNotNull("Expected a tag named 'booleanTag'", booleanTag);
         assertTrue("booleanTag should be a Boolean", booleanTag instanceof Boolean);
-        assertEquals("booleanTag should be true", true, (Boolean) booleanTag);
+        assertEquals("booleanTag should be true", true, booleanTag);
 
         Object numericTag = tags.get("numericTag");
         assertNotNull("Expected a tag named 'numericTag'", numericTag);
         assertTrue("numericTag should be a Number", numericTag instanceof Number);
-        assertEquals("numericTag should be 100", 100, (Number) numericTag);
+        assertEquals("numericTag should be 100", 100, numericTag);
     }
 
     @Test

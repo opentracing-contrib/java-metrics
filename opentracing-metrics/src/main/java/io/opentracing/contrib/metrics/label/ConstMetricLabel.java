@@ -13,8 +13,8 @@
  */
 package io.opentracing.contrib.metrics.label;
 
+import io.opentracing.contrib.api.SpanData;
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.SpanData;
 
 /**
  * This implementation returns a constant value for the metric label.

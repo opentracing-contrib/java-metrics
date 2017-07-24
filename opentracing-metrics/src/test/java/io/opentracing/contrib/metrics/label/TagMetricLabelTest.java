@@ -13,7 +13,7 @@
  */
 package io.opentracing.contrib.metrics.label;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,9 +23,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import io.opentracing.contrib.api.SpanData;
 import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.SpanData;
-import io.opentracing.contrib.metrics.label.TagMetricLabel;
 
 public class TagMetricLabelTest {
 

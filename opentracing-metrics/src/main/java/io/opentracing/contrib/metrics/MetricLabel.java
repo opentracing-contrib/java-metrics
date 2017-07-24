@@ -13,6 +13,8 @@
  */
 package io.opentracing.contrib.metrics;
 
+import io.opentracing.contrib.api.SpanData;
+
 /**
  * This interface represents a label associated with a reported metric type. For each sampled
  * metric instance, it can be used to determine the name and value of the label.
