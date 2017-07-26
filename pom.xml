@@ -70,7 +70,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.io.opentracing>0.31.0</version.io.opentracing>
-    <version.io.opentracing.contrib.opentracing-api-extensions>0.1.0</version.io.opentracing.contrib.opentracing-api-extensions>
+    <version.io.opentracing.contrib.opentracing-api-extensions>0.2.0</version.io.opentracing.contrib.opentracing-api-extensions>
     <version.io.opentracing.contrib.opentracing-spring-web>0.1.0</version.io.opentracing.contrib.opentracing-spring-web>
 
     <version.io.micrometer>1.0.3</version.io.micrometer>
@@ -121,6 +121,11 @@
       <dependency>
         <groupId>io.opentracing.contrib</groupId>
         <artifactId>opentracing-api-extensions-tracer-spring-autoconfigure</artifactId>
+        <version>${version.io.opentracing.contrib.opentracing-api-extensions}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentracing.contrib</groupId>
+        <artifactId>opentracing-api-extensions-tracerdecorator</artifactId>
         <version>${version.io.opentracing.contrib.opentracing-api-extensions}</version>
       </dependency>
 
