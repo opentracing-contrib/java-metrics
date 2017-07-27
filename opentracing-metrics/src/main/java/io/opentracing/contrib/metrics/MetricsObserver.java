@@ -13,10 +13,10 @@
  */
 package io.opentracing.contrib.metrics;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import io.opentracing.contrib.api.SpanData;
 import io.opentracing.contrib.api.SpanObserver;
@@ -32,10 +32,10 @@ public class MetricsObserver implements TracerObserver {
     private final MetricsSpanObserver spanObserver;
 
     public MetricsObserver(MetricsReporter metricsReporter) {
-        this(Collections.singletonList(metricsReporter));
+        this(Collections.singleton(metricsReporter));
     }
 
-    public MetricsObserver(List<MetricsReporter> metricsReporters) {
+    public MetricsObserver(Set<MetricsReporter> metricsReporters) {
         spanObserver = new MetricsSpanObserver(metricsReporters);
     }
 
@@ -46,10 +46,10 @@ public class MetricsObserver implements TracerObserver {
 
     private class MetricsSpanObserver implements SpanObserver {
 
-        private final List<MetricsReporter> metricsReporters;
+        private final Set<MetricsReporter> metricsReporters;
 
-        public MetricsSpanObserver(final List<MetricsReporter> metricsReporters) {
-            this.metricsReporters = new ArrayList<MetricsReporter>(metricsReporters);
+        public MetricsSpanObserver(final Set<MetricsReporter> metricsReporters) {
+            this.metricsReporters = new HashSet<MetricsReporter>(metricsReporters);
         }
 
         @Override
