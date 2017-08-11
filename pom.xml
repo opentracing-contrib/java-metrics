@@ -70,6 +70,7 @@
 
     <version.io.opentracing>0.30.0</version.io.opentracing>
     <version.io.opentracing.contrib.opentracing-api-extensions>0.0.3</version.io.opentracing.contrib.opentracing-api-extensions>
+    <version.io.opentracing.contrib.opentracing-spring-web>0.0.9-SNAPSHOT</version.io.opentracing.contrib.opentracing-spring-web>
     <version.io.prometheus>0.0.23</version.io.prometheus>
     <version.javax.servlet-api>3.1.0</version.javax.servlet-api>
     <version.junit>4.12</version.junit>
@@ -134,6 +135,13 @@
         <groupId>io.prometheus</groupId>
         <artifactId>simpleclient_servlet</artifactId>
         <version>${version.io.prometheus}</version>
+      </dependency>
+
+      <!-- OpenTracing Spring Web -->
+      <dependency>
+        <groupId>io.opentracing.contrib</groupId>
+        <artifactId>opentracing-spring-web-autoconfigure</artifactId>
+        <version>${version.io.opentracing.contrib.opentracing-spring-web}</version>
       </dependency>
 
       <!-- Test dependencies -->

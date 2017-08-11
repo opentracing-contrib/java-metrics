@@ -1,4 +1,5 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 io.opentracing.contrib.metrics.prometheus.spring.autoconfigure.PrometheusConfiguration,\
 io.opentracing.contrib.metrics.prometheus.spring.autoconfigure.PrometheusMetricsReporterConfiguration,\
-io.opentracing.contrib.metrics.prometheus.spring.autoconfigure.PrometheusServletConfiguration
+io.opentracing.contrib.metrics.prometheus.spring.autoconfigure.PrometheusServletConfiguration,\
+io.opentracing.contrib.metrics.prometheus.spring.autoconfigure.WebTracingConfigurationBeanPostProcessor
