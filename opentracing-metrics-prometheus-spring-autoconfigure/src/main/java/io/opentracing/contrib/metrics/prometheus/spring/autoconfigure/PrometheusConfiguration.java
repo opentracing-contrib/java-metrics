@@ -21,7 +21,6 @@ import org.springframework.context.annotation.Configuration;
 import io.prometheus.client.CollectorRegistry;
 
 @Configuration
-@ConditionalOnClass(value = {CollectorRegistry.class})
 public class PrometheusConfiguration {
 
     @Bean

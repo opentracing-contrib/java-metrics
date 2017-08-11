@@ -27,7 +27,6 @@ import io.opentracing.contrib.metrics.prometheus.PrometheusMetricsReporter;
 import io.prometheus.client.CollectorRegistry;
 
 @Configuration
-@ConditionalOnClass(value = {CollectorRegistry.class})
 public class PrometheusMetricsReporterConfiguration {
 
     @Autowired

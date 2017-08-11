@@ -35,12 +35,6 @@
       <groupId>io.opentracing.contrib</groupId>
       <artifactId>opentracing-metrics-prometheus</artifactId>
       <version>${project.version}</version>
-      <exclusions>
-      	<exclusion>
-     	  <groupId>io.prometheus</groupId>
-     	  <artifactId>*</artifactId>
-      	</exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
