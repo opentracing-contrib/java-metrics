@@ -35,11 +35,12 @@ public class WebTracingConfigurationBeanPostProcessor implements BeanPostProcess
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof WebTracingConfiguration) {
+            WebTracingConfiguration config = (WebTracingConfiguration)bean;
             StringBuilder skip =
-                    new StringBuilder(((WebTracingConfiguration)bean).getSkipPattern().pattern())
+                    new StringBuilder((config).getSkipPattern().pattern())
                     .append('|')
                     .append(metricsPath);
-            return ((WebTracingConfiguration)bean).toBuilder()
+            return config.toBuilder()
                     .withSkipPattern(Pattern.compile(skip.toString()))
                     .build();
         }
