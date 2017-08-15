@@ -29,7 +29,7 @@ import io.opentracing.contrib.spring.web.autoconfig.WebTracingConfiguration;
 @ConditionalOnProperty(name="OPENTRACING_METRICS_EXPORTER_HTTP_PATH")
 public class WebTracingConfigurationBeanPostProcessor implements BeanPostProcessor {
 
-    @Value("${OPENTRACING_METRICS_EXPORTER_HTTP_PATH:false}")
+    @Value("${OPENTRACING_METRICS_EXPORTER_HTTP_PATH}")
     private String metricsPath;
 
     @Override
