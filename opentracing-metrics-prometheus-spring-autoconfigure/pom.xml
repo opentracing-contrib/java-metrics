@@ -38,6 +38,12 @@
     </dependency>
 
     <dependency>
+      <groupId>io.opentracing.contrib</groupId>
+      <artifactId>opentracing-spring-web-autoconfigure</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>io.prometheus</groupId>
       <artifactId>simpleclient</artifactId>
       <scope>provided</scope>
