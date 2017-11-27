@@ -69,7 +69,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.io.opentracing>0.30.0</version.io.opentracing>
-    <version.io.opentracing.contrib.opentracing-api-extensions>0.0.4</version.io.opentracing.contrib.opentracing-api-extensions>
+    <version.io.opentracing.contrib.opentracing-api-extensions>0.0.5</version.io.opentracing.contrib.opentracing-api-extensions>
     <version.io.opentracing.contrib.opentracing-spring-web>0.0.12</version.io.opentracing.contrib.opentracing-spring-web>
     <version.io.prometheus>0.0.23</version.io.prometheus>
     <version.javax.servlet-api>3.1.0</version.javax.servlet-api>
