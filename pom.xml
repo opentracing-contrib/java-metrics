@@ -19,7 +19,7 @@
 
   <groupId>io.opentracing.contrib</groupId>
   <artifactId>opentracing-metrics-parent</artifactId>
-  <version>0.1.6-SNAPSHOT</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>OpenTracing Metrics</name>
@@ -68,14 +68,14 @@
     <maven.compiler.target>1.7</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.io.opentracing>0.30.0</version.io.opentracing>
-    <version.io.opentracing.contrib.opentracing-api-extensions>0.0.5</version.io.opentracing.contrib.opentracing-api-extensions>
-    <version.io.opentracing.contrib.opentracing-spring-web>0.0.12</version.io.opentracing.contrib.opentracing-spring-web>
+    <version.io.opentracing>0.31.0</version.io.opentracing>
+    <version.io.opentracing.contrib.opentracing-api-extensions>0.1.0</version.io.opentracing.contrib.opentracing-api-extensions>
+    <version.io.opentracing.contrib.opentracing-spring-web>0.1.0</version.io.opentracing.contrib.opentracing-spring-web>
     <version.io.prometheus>0.0.23</version.io.prometheus>
     <version.javax.servlet-api>3.1.0</version.javax.servlet-api>
     <version.junit>4.12</version.junit>
     <version.org.mockito-mockito-all>1.10.19</version.org.mockito-mockito-all>
-    <version.org.springframework.boot>1.4.1.RELEASE</version.org.springframework.boot>
+    <version.org.springframework.boot>1.5.3.RELEASE</version.org.springframework.boot>
 
     <version.io.takari-maven>0.3.4</version.io.takari-maven>
     <version.io.zikin.centralsync-maven-plugin>0.1.0</version.io.zikin.centralsync-maven-plugin>
