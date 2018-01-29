@@ -28,12 +28,11 @@ import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import io.opentracing.ActiveSpan;
+import io.opentracing.Scope;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.api.SpanData;
 import io.opentracing.mock.MockSpan;
 import io.opentracing.mock.MockTracer;
-import io.opentracing.util.ThreadLocalActiveSpanSource;
 
 public class MetricsTest {
 
@@ -51,28 +50,22 @@ public class MetricsTest {
         sysTags.put("service", "TestService");
         
         MetricsReporter reporter = Mockito.mock(MetricsReporter.class);
-        MockTracer tracer = new MockTracer(new ThreadLocalActiveSpanSource());
+        MockTracer tracer = new MockTracer();
         Tracer metricsTracer = Metrics.decorate(tracer, reporter);
 
-        ActiveSpan parent = metricsTracer.buildSpan("parent").withTag("spanName","parent").startActive();
-        parent.setTag("additionalTag", "parent");
+        Scope parent = metricsTracer.buildSpan("parent").withTag("spanName","parent").startActive(true);
+        parent.span().setTag("additionalTag", "parent");
         
-        ActiveSpan child = metricsTracer.buildSpan("child").withTag("spanName","child").startActive();
-        child.setTag("additionalTag", "child");
+        Scope child = metricsTracer.buildSpan("child").withTag("spanName","child").startActive(true);
+        child.span().setTag("additionalTag", "child");
 
-        // Test ref counting works fine
-        ActiveSpan child2 = child.capture().activate();
-        
-        child2.deactivate();
-        
-        // Still should be ref to child span
         assertEquals(0, tracer.finishedSpans().size());
 
-        child.deactivate();
+        child.close();
         
         assertEquals(1, tracer.finishedSpans().size());
 
-        parent.deactivate();
+        parent.close();
 
         List<MockSpan> spans = tracer.finishedSpans();
         assertEquals(2, spans.size());
@@ -98,15 +91,15 @@ public class MetricsTest {
     @Test
     public void testWithTags() {
         MetricsReporter reporter = Mockito.mock(MetricsReporter.class);
-        MockTracer tracer = new MockTracer(new ThreadLocalActiveSpanSource());
+        MockTracer tracer = new MockTracer();
         Tracer metricsTracer = Metrics.decorate(tracer, reporter);
 
-        ActiveSpan parent = metricsTracer.buildSpan("parent")
+        Scope parent = metricsTracer.buildSpan("parent")
                 .withTag("booleanTag", true)
                 .withTag("numericTag", new Integer(100))
-                .startActive();
+                .startActive(true);
 
-        parent.deactivate();
+        parent.close();
 
         List<MockSpan> spans = tracer.finishedSpans();
         assertEquals(1, spans.size());
@@ -127,16 +120,16 @@ public class MetricsTest {
     @Test
     public void testWithStartTimestamp() throws InterruptedException {
         MetricsReporter reporter = Mockito.mock(MetricsReporter.class);
-        MockTracer tracer = new MockTracer(new ThreadLocalActiveSpanSource());
+        MockTracer tracer = new MockTracer();
         Tracer metricsTracer = Metrics.decorate(tracer, reporter);
 
         long start = System.currentTimeMillis() * 687;
         Thread.sleep(100);
-        ActiveSpan parent = metricsTracer.buildSpan("parent")
+        Scope parent = metricsTracer.buildSpan("parent")
                 .withStartTimestamp(start)
-                .startActive();
+                .startActive(true);
 
-        parent.deactivate();
+        parent.close();
 
         List<MockSpan> spans = tracer.finishedSpans();
         assertEquals(1, spans.size());
@@ -148,22 +141,22 @@ public class MetricsTest {
     @Test
     public void testAsChildOf() {
         MetricsReporter reporter = Mockito.mock(MetricsReporter.class);
-        MockTracer tracer = new MockTracer(new ThreadLocalActiveSpanSource());
+        MockTracer tracer = new MockTracer();
         Tracer metricsTracer = Metrics.decorate(tracer, reporter);
 
-        ActiveSpan parentSpan = metricsTracer.buildSpan("parent")
+        Scope parentSpan = metricsTracer.buildSpan("parent")
                 .withTag("spanName","parent")
-                .startActive();
-        parentSpan.setTag("additionalTag", "parent");
+                .startActive(true);
+        parentSpan.span().setTag("additionalTag", "parent");
 
-        ActiveSpan childSpan = metricsTracer.buildSpan("child")
-                .asChildOf(parentSpan)
+        Scope childSpan = metricsTracer.buildSpan("child")
+                .asChildOf(parentSpan.span())
                 .withTag("spanName","child")
-                .startActive();
-        childSpan.setTag("additionalTag", "child");
+                .startActive(true);
+        childSpan.span().setTag("additionalTag", "child");
 
-        childSpan.deactivate();
-        parentSpan.deactivate();
+        childSpan.close();
+        parentSpan.close();
 
         List<MockSpan> spans = tracer.finishedSpans();
         assertEquals(2, spans.size());
