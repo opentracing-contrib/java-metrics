@@ -7,7 +7,8 @@ for reporting span based application metrics.
 
 The project currently has support for reporting metrics via:
 
-* Prometheus
+* Micrometer
+* Prometheus (deprecated in favor of Micrometer)
 
 A _Tracer_ is decorated in the following way:
 
@@ -82,38 +83,50 @@ For example, a `MetricLabel` implementation could be provided for the _error_ la
 standard boolean value and potentially provide an alternative set of values based on other tags or baggage
 values associated with a span.
 
+## Reporting Metrics
 
-## Reporting Metrics with Prometheus
-
-Prometheus metrics reporting is provided by a specific implementation of the _MetricsReporter_ interface.
+Micrometer metrics reporting is provided by a specific implementation of the _MetricsReporter_ interface.
 
 For example,
 
 ```java
-        PrometheusMetricsReporter reporter = PrometheusMetricsReporter.newMetricsReporter()
-                .withCollectorRegistry(collectorRegistry)
-                .withConstLabel("service", "...")
-                .withTagLabel(Tags.HTTP_STATUS_CODE,"na")
-                .build();
+
+// Your application needs to setup a concrete Micrometer backend
+io.micrometer.core.instrument.Metrics.addRegistry(new SimpleMeterRegistry());
+
+// Prepare a concrete OpenTracing tracer
+Tracer tracer = getTracer();
+
+// A reporter can then be created like this:
+MicrometerMetricsReporter reporter = MicrometerMetricsReporter.newMetricsReporter()
+    .withName("MyName")
+    .withConstLabel("span.kind", Tags.SPAN_KIND_CLIENT)
+    .build();
+
+// Wrap the concrete Tracer, so that we can record the metrics about the reported spans
+Tracer metricsTracer = io.opentracing.contrib.metrics.Metrics.decorate(tracer, reporter);
 ```
 
-The builder can be used to directly specify a Prometheus _CollectorRegistry_ instance. If not provided, then
-the default will be used.
+Builder methods are provided to enable new labels to be provided, or existing ones overridden.
 
-Other methods are provided to enable new labels to be provided, or existing ones overridden.
+Refer to the Micrometer documentation on how to get the metrics into a concrete backend, such as JMX, StatsD or
+Prometheus.
 
-The responsibility for identifying how Prometheus metrics are exposed is outside the scope of the _MetricsReporter_
-allowing the application to decide whether to expose via HTTP endpoint, use the Push Gateway, etc. For example,
-using the servlet with a Jetty server:
+### Reporting metrics with a Prometheus backend
 
-```java
-	Server server = new Server(1234);
-	ServletContextHandler context = new ServletContextHandler();
-	context.setContextPath("/");
-	server.setHandler(context);
-	context.addServlet(new ServletHolder(new MetricsServlet()), "/metrics");
-	server.start();
-```
+Auto-configuration for Spring Boot applications of a Prometheus backend is provided via the module
+`opentracing-metrics-prometheus-spring-autoconfigure`. To auto-register an endpoint serving Prometheus metrics, export
+the property `OPENTRACING_METRICS_EXPORTER_HTTP_PATH` with the path to be used - e.g. "/metrics".
+
+### `TracerObserver` approach
+
+Instead of decorating an OpenTracing tracer, it's also possible to combine the usage of Spring Boot's auto configuration
+feature and the `TracerObserver` from
+[`io.opentracing.contrib:opentracing-api-extensions-tracer`](https://github.com/opentracing-contrib/java-api-extensions).
+
+Just include the artifact `io.opentracing.contrib:opentracing-metrics-spring-autoconfigure` into your Spring Boot
+application and the `TracerObserver` will be registered automatically.
+
 
 ## Known Issues
 

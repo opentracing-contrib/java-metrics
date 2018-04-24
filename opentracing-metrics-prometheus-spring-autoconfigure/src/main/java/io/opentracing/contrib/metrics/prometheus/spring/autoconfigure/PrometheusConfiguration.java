@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 The OpenTracing Authors
+ * Copyright 2017-2018 The OpenTracing Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,15 +13,13 @@
  */
 package io.opentracing.contrib.metrics.prometheus.spring.autoconfigure;
 
+import io.prometheus.client.CollectorRegistry;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.prometheus.client.CollectorRegistry;
-
 @Configuration
 public class PrometheusConfiguration {
-
     @Bean
     @ConditionalOnMissingBean
     public CollectorRegistry defaultCollectorRegistry() {

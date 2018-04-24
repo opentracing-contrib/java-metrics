@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 The OpenTracing Authors
+ * Copyright 2017-2018 The OpenTracing Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -13,20 +13,26 @@
  */
 package io.opentracing.contrib.metrics.prometheus.spring.autoconfigure;
 
-import java.util.Set;
-
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.opentracing.contrib.metrics.MetricLabel;
+import io.opentracing.contrib.metrics.MetricsReporter;
+import io.opentracing.contrib.metrics.micrometer.MicrometerMetricsReporter;
+import io.prometheus.client.CollectorRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import io.opentracing.contrib.metrics.MetricLabel;
-import io.opentracing.contrib.metrics.MetricsReporter;
-import io.opentracing.contrib.metrics.prometheus.PrometheusMetricsReporter;
-import io.prometheus.client.CollectorRegistry;
+import java.util.Set;
 
 @Configuration
 public class PrometheusMetricsReporterConfiguration {
+    @Autowired(required=false)
+    private Set<MetricLabel> metricLabels;
 
     @Autowired
     private CollectorRegistry collectorRegistry;
@@ -34,16 +40,15 @@ public class PrometheusMetricsReporterConfiguration {
     @Value("${OPENTRACING_METRICS_NAME:}")
     private String metricsName;
 
-    @Autowired(required=false)
-    private Set<MetricLabel> metricLabels;
-
     @Bean
-    public MetricsReporter prometheusMetricsReporter() {
-        PrometheusMetricsReporter.Builder builder = PrometheusMetricsReporter.newMetricsReporter();
+    public MetricsReporter prometheusMetricsReporter(PrometheusMeterRegistry prometheusMeterRegistry) {
+        Metrics.addRegistry(prometheusMeterRegistry);
+
+        MicrometerMetricsReporter.Builder builder = MicrometerMetricsReporter.newMetricsReporter();
         if (metricsName != null && !metricsName.isEmpty()) {
             builder.withName(metricsName);
         }
-        builder.withCollectorRegistry(collectorRegistry);
+
         if (metricLabels != null && !metricLabels.isEmpty()) {
             for (MetricLabel label : metricLabels) {
                 builder.withCustomLabel(label);
@@ -52,4 +57,9 @@ public class PrometheusMetricsReporterConfiguration {
         return builder.build();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public PrometheusMeterRegistry prometheusMeterRegistry() {
+        return new PrometheusMeterRegistry(PrometheusConfig.DEFAULT, collectorRegistry, Clock.SYSTEM);
+    }
 }

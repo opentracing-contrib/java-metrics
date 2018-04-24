@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright 2017 The OpenTracing Authors
+    Copyright 2017-2018 The OpenTracing Authors
 
     Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
     in compliance with the License. You may obtain a copy of the License at
@@ -58,20 +58,24 @@
 
   <modules>
     <module>opentracing-metrics</module>
-    <module>opentracing-metrics-spring-autoconfigure</module>
+    <module>opentracing-metrics-micrometer</module>
     <module>opentracing-metrics-prometheus</module>
     <module>opentracing-metrics-prometheus-spring-autoconfigure</module>
+    <module>opentracing-metrics-spring-autoconfigure</module>
   </modules>
 
   <properties>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.io.opentracing>0.31.0</version.io.opentracing>
     <version.io.opentracing.contrib.opentracing-api-extensions>0.1.0</version.io.opentracing.contrib.opentracing-api-extensions>
     <version.io.opentracing.contrib.opentracing-spring-web>0.1.0</version.io.opentracing.contrib.opentracing-spring-web>
+
+    <version.io.micrometer>1.0.3</version.io.micrometer>
     <version.io.prometheus>0.0.23</version.io.prometheus>
+
     <version.javax.servlet-api>3.1.0</version.javax.servlet-api>
     <version.junit>4.12</version.junit>
     <version.org.mockito-mockito-all>1.10.19</version.org.mockito-mockito-all>
@@ -118,6 +122,18 @@
         <groupId>io.opentracing.contrib</groupId>
         <artifactId>opentracing-api-extensions-tracer-spring-autoconfigure</artifactId>
         <version>${version.io.opentracing.contrib.opentracing-api-extensions}</version>
+      </dependency>
+
+      <!-- Micrometer dependencies -->
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-core</artifactId>
+        <version>${version.io.micrometer}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.micrometer</groupId>
+        <artifactId>micrometer-registry-prometheus</artifactId>
+        <version>${version.io.micrometer}</version>
       </dependency>
 
       <!-- Prometheus dependencies -->
@@ -219,6 +235,13 @@
             <exclude>**/*.factories</exclude>
           </excludes>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin-git</artifactId>
+            <version>${version.maven-license-plugin}</version>
+          </dependency>
+        </dependencies>
         <executions>
           <execution>
             <goals>

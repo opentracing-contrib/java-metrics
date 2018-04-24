@@ -13,63 +13,68 @@
  */
 package io.opentracing.contrib.metrics.prometheus.spring.autoconfigure;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.Timer;
 import io.opentracing.contrib.api.SpanData;
-import io.opentracing.contrib.metrics.MetricsReporter;
+import io.opentracing.contrib.api.TracerObserver;
 import io.opentracing.tag.Tags;
-import io.prometheus.client.Collector.MetricFamilySamples;
-import io.prometheus.client.CollectorRegistry;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-@SpringBootTest(
-        classes = {PrometheusMetricsReporterConfigurationTest.SpringConfiguration.class})
+@SpringBootTest(classes = {PrometheusMetricsReporterObserverTest.SpringConfiguration.class})
 @RunWith(SpringJUnit4ClassRunner.class)
-public class PrometheusMetricsReporterConfigurationTest {
-    private static final CollectorRegistry testCollectorRegistry = new CollectorRegistry();
-
-    @Autowired
-    private MetricsReporter metricsReporter;
-
+public class PrometheusMetricsReporterObserverTest {
     @Configuration
     @EnableAutoConfiguration
     public static class SpringConfiguration {
-        @Bean
-        public CollectorRegistry testCollectorRegistry() {
-            return testCollectorRegistry;
-        }
     }
 
-    @Test
-    public void testMetricsReporter() {
-        // prepare
-        SpanData metricSpanData = Mockito.mock(SpanData.class);
+    @Autowired(required=false)
+    protected TracerObserver tracerObserver;
 
-        Mockito.when(metricSpanData.getOperationName())
+    @Test
+    public void testTracerObserverWithReporters() {
+        // prepare
+        assertNotNull(tracerObserver);
+
+        SpanData spanData = Mockito.mock(SpanData.class);
+        Mockito.when(spanData.getOperationName())
                 .thenReturn("testOp");
 
-        Mockito.when(metricSpanData.getTags())
+        Mockito.when(spanData.getTags())
                 .thenReturn(Collections.<String, Object>singletonMap(Tags.SPAN_KIND.getKey(), Tags.SPAN_KIND_CLIENT));
 
-        Mockito.when(metricSpanData.getDuration())
+        Mockito.when(spanData.getDuration())
                 .thenReturn(500L);
 
         // test
-        metricsReporter.reportSpan(metricSpanData);
+        tracerObserver.onStart(spanData).onFinish(spanData, System.currentTimeMillis());
 
         // verify
-        MetricFamilySamples samples = testCollectorRegistry.metricFamilySamples().nextElement();
-        assertFalse(samples.samples.isEmpty());
+        assertEquals(1, Metrics.globalRegistry.getRegistries().size());
+        MeterRegistry registry = Metrics.globalRegistry.getRegistries().iterator().next();
+
+        assertEquals(1, registry.getMeters().size());
+        Meter meter = registry.getMeters().get(0);
+        assertTrue(meter instanceof Timer);
+
+        double total = ((Timer) meter).totalTime(TimeUnit.MICROSECONDS);
+        assertEquals(500d, total, 0d);
     }
 
 }
