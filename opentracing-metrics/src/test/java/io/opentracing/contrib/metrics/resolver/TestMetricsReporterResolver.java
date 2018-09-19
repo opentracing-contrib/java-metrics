@@ -29,4 +29,5 @@ public class TestMetricsReporterResolver implements MetricsReporterResolver {
     public Set<MetricsReporter> resolve() {
         return metricsReporters;
     }
+
 }

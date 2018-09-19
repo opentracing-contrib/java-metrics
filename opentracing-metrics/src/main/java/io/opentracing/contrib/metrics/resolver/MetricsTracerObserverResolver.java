@@ -50,5 +50,4 @@ public class MetricsTracerObserverResolver implements TracerObserverResolver {
         }
         return reporters;
     }
-
 }

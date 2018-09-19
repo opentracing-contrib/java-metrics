@@ -53,4 +53,5 @@ public class MetricsTracerObserverResolverTest {
 
         Mockito.verify(reporter).reportSpan(spanData);
     }
+
 }

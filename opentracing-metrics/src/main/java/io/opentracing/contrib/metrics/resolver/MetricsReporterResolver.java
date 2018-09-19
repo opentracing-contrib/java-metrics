@@ -25,4 +25,5 @@ import io.opentracing.contrib.metrics.MetricsReporter;
 public interface MetricsReporterResolver {
 
     Set<MetricsReporter> resolve();
+
 }
