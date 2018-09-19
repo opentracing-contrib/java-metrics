@@ -42,6 +42,11 @@
       <groupId>io.opentracing.contrib</groupId>
       <artifactId>opentracing-api-extensions-tracer</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.opentracing.contrib</groupId>
+      <artifactId>opentracing-api-extensions-tracerdecorator</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>io.opentracing</groupId>
